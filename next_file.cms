@@ -1,0 +1,29 @@
+$name = $name + 1
+// собираем data_image в отдельный файл
+$a = STRCONCAT (\input\pic_000, $name,.txt)
+//TFCLEAR ($a) 
+$wb = 0
+
+waitms(244 + $S_CORR)
+
+
+WHILE ($wb = 0)
+	GETSCREEN
+	IF_PICTURE_IN (1371,829, 1600,976, "white_box.bmp")
+		LOGWRITE ("Ожидаем блоки")
+		$wb = 0
+	ELSE
+		LOGWRITE ("Блоки загрузились")
+		$wb = 1
+	END_IF
+END_CYC	
+
+// переходим к сохранению ссылок в файл
+waitms(44 + $S_CORR) 
+RCLICK(1500,850)
+MOVE (1609, 732)
+waitms(244 + $S_CORR)
+//LCLICK(1736,800)
+LCLICK(1322,789)
+LOGWRITE ("Сохраняем файл ", $name,".txt" )
+TFWrite($a, FROMCLIP ())

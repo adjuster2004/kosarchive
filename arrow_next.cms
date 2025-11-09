@@ -1,0 +1,20 @@
+﻿// Выбираем окно разработчика и очищаем собранные данные
+LCLICK (1658, 409)
+WAITMS (150)
+KEYDOWN (#CTRL)
+WAITMS (50)
+KEYPRESS (#E)
+WAITMS (50)
+KEYPRESS (#E)
+KEYUP (#CTRL)
+
+// нажимаем кнопку вперед
+IF_PICTURE_IN (960,105,1218,190, "arrow_next.bmp")
+	LOGWRITE ("координаты кнопки Дальше ",$_return1," ", $_return2)
+	LCLICK($_return1+6, $_return2+10)
+	waitms(334 + $S_CORR) 
+ELSE
+	LOGWRITE ("не нашел кпонку Вперед")
+	LOGWRITE ("сохраните кнопку заново и повторите запуск задания")
+	HALT
+END_IF
