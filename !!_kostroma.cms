@@ -1,0 +1,95 @@
+// RECORDED SCRIPT 04.11.2025 @adjuster2004
+// Костромской архив
+// Подготавливаем страницу к просмотру. Смотрите требования.
+// Запускаем clickermann и выбираем файл конфигурации
+// Запускаем старт
+// Сначала скрипт собирает картинки в виде base64, 
+// Для преобразования в картинку воспользуйтесь python скриптом
+
+// подзадача для сбора ссылок
+// waitms correction
+$S_CORR = 0
+$wh = 0
+$pages = 0
+$name = 0
+
+// предупреждение, файл для ссылок будет перезаписан
+// нужно ли собирать ссылки
+$mr = DIALOGBOX ("Файлы txt будут перезаписаны. Сохраните данные", 1 ) 
+if ($mr = 1)
+else
+  print("Отменили операцию")
+  HALT
+end_if 
+
+// платный или бесплатный период
+GETSCREEN
+IF_PICTURE_IN (7,112, 350,225, "paid_time.bmp")
+	LOGWRITE ("Платный период")
+	$x_free = 220
+	$y_free = 130
+ELSE
+	LOGWRITE ("Бесплатный период")
+	$x_free = 9
+	$y_free = 130
+END_IF
+
+///////////////////////////////////////////////////////////////////
+// обновляем первый лист
+
+GETSCREEN
+// нажимаем кнопку вперед >
+#include "arrow_next.cms"
+// вызываем подпрограмму проверки обновления картинки
+#include "while_download_pic.cms"
+
+// нажимаем кнопку назад <
+#include "arrow_back.cms"
+// вызываем подпрограмму проверки обновления картинки
+#include "while_download_pic.cms"
+// вызываем подпрограмму сбора base64
+#include "next_file.cms"
+/////////////////////////////////////////////////////////////////////
+
+// цикл сбора data_image в разные файлы
+WHILE ($wh = 0)
+	
+	// будет создан скриншот небольшого кусочка левого верхнего угла
+	getscreen
+	SCREENSHOTFIX ( $x_free,$y_free, $x_free+296,$y_free+46, "number.bmp")
+	//SCREENSHOTFIX ( 220,130, 570,170, "number.bmp")
+	
+	// нажимаем кнопку вперед >
+	#include "arrow_next.cms"
+	// вызываем подпрограмму проверки обновления картинки
+	#include "while_download_pic.cms"
+	GETSCREEN
+	IF_PICTURE_IN ($x_free-5,$y_free-6, $x_free+430,$y_free+50, "number.bmp")
+	//IF_PICTURE_IN (215,124, 575,176, "number.bmp")
+		LOGWRITE ("Похоже, достигли последнего листа. Завершаем загрузку")
+		$wh = 1
+		Sound (stop.wav)
+	ELSE
+		LOGWRITE ("Продолжаем загрузку картинок")
+		#include "next_file.cms"
+	END_IF
+END_CYC	
+
+end:
+
+GETSCREEN
+// закрываем просмотр
+IF_PICTURE_IN (850,105,1681,210, "close.bmp")
+	LOGWRITE ("координаты кнопки Закрыть ",$_return1," ", $_return2)
+	LCLICK($_return1+6, $_return2+10)
+	waitms(334 + $S_CORR) 
+	LOGWRITE ("Закрываем режим просмотра")
+ELSE
+	LCLICK(1287, 151)
+	waitms(334 + $S_CORR)
+	LOGWRITE ("не нашел кпонку Закрыть") 
+	LOGWRITE ("Закрываем режим просмотра")
+	HALT
+END_IF
+
+HALT
